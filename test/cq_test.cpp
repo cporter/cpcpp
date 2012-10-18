@@ -67,6 +67,6 @@ TEST (CQTest, MultipleThreads)
       ++zeros;
 
   EXPECT_GT (N_THREADS - 1, zeros)
-    << "The work shouldn't have all bee done by one thread....";
+    << "The work shouldn't have all been done by one thread....";
   EXPECT_EQ (expected, total);
 }
