@@ -61,5 +61,12 @@ TEST (CQTest, MultipleThreads)
       total += counts[i];
     }
 
+  int zeros = 0;
+  for (int i = 0; i < N_THREADS; ++i)
+    if (0 == counts[i])
+      ++zeros;
+
+  EXPECT_GT (N_THREADS - 1, zeros)
+    << "The work shouldn't have all bee done by one thread....";
   EXPECT_EQ (expected, total);
 }
