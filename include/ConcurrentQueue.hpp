@@ -3,9 +3,13 @@
 #define __CONCURRENT_QUEUE_HPP__
 
 #include <boost/thread.hpp>
+#include <queue>
 
+namespace cpcpp {
 
-/// A very, very simple queue for use in a multi-threaded environment
+/// \brief A very, very simple queue for use in a multi-threaded environment
+///
+/// Requires boost::thread.
 template <typename T>
 class ConcurrentQueue {
 private:
@@ -14,12 +18,16 @@ private:
   boost::condition_variable cond;
   
 public:
-  /// Add an element to the front of the queue
+  /// \brief Add an element to the front of the queue
   void Enqueue(T t);
-  /// Remove an element from the back of the queue. Blocks if queue is empty
+  /// \brief Remove an element from the back of the queue
+  /// 
+  /// Blocks indefinitely while the queue is empty.
   T Dequeue();
-  /// How many things are currently in the queue?
-  /// Note: this does not account for any current blockers
+  /// \brief How many things are currently available in the queue?
+  ///
+  /// Does not take in to account any pending Dequeue's (that is, 
+  /// the count can never be *negative*.)
   const size_t Count() const;
 };
 
@@ -47,4 +55,5 @@ const size_t ConcurrentQueue<T>::Count() const
   return q . size();
 }
 
+}
 #endif //!__CONCURRENT_QUEUE_HPP__
