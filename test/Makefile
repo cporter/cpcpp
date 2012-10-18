@@ -1,5 +1,5 @@
 
-CXXFLAGS=-I$(GTEST_DIR)/include
+CXXFLAGS=-I$(GTEST_DIR)/include -I../include
 LDFLAGS=-L$(GTEST_DIR)
 LDLIBS=-lgtest -lgtest_main -lboost_thread-mt -lboost_system-mt
 

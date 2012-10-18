@@ -1,6 +1,6 @@
 
 
-#include "../include/ConcurrentQueue.hpp"
+#include <cpcpp/ConcurrentQueue.hpp>
 #include <gtest/gtest.h>
 
 typedef cpcpp::ConcurrentQueue<int> iq_t;
@@ -18,4 +18,48 @@ TEST (CQTest, SingleThread)
     }
 
   EXPECT_EQ (0, foo . Count ());
+}
+
+struct consumer {
+  iq_t *q;
+  int *count;
+  consumer (iq_t *_q, int *c)  :  q (_q), count (c) {}
+  void operator()() {
+    while (true) {
+      int x = q -> Dequeue ();
+      if (x < 0)
+	break;
+      else *count += x;
+    }
+  }
+};
+
+TEST (CQTest, MultipleThreads)
+{ iq_t foo;
+  std::vector<boost::thread*> threads;
+
+  const size_t N_THREADS = 10;
+  const size_t N_INPUT = 1000;
+
+  std::vector<int> counts (N_THREADS);
+  for (int i = 0; i < N_THREADS; ++i)
+    threads . push_back (new boost::thread (consumer (&foo, &counts[i])));
+  
+  int expected = 0;
+  for (int i = 0; i < N_INPUT; ++i)
+    { foo . Enqueue (i);
+      expected += i;
+    }
+
+  for (int i = 0; i < N_THREADS; ++i)
+    foo . Enqueue (-1);
+
+  int total = 0;
+  for (int i = 0; i < N_THREADS; ++i)
+    { threads[i] -> join ();
+      delete threads[i];
+      total += counts[i];
+    }
+
+  EXPECT_EQ (expected, total);
 }
